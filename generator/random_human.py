@@ -2,6 +2,7 @@ import os
 import numpy as np
 import json
 from hashlib import sha256
+from random import shuffle
 
 class RandomHuman:
     """
@@ -50,7 +51,7 @@ class RandomHuman:
         the model's age, gender, ethnicity to be encoded in the filename.
         :return:
         """
-        model_files = [f for f in os.listdir(self.model_dir) if ".mhm" in f]
+        model_files = [os.path.join(root, fname) for root, subdirs, files in os.walk(self.model_dir) for fname in files if fname.endswith(".mhm")]
         file_name = np.random.choice(model_files)
 
         self.model = os.path.join(self.model_dir, file_name)
@@ -86,7 +87,10 @@ class RandomHuman:
         file = np.random.choice(unisex_files + gender_files)
         cloth_folder = os.path.join(folder, file)
 
-        cloth_file = [f for f in os.listdir(cloth_folder) if ".mhclo" in f][0]
+        file_list = os.listdir(cloth_folder)
+        shuffle(file_list)
+        cloth_file = [f for f in file_list if ".mhclo" in f or ".mhmat" in f][0]
+
         return os.path.join(cloth_folder, cloth_file)
 
     def _choose_hair(self):
@@ -137,7 +141,8 @@ class RandomHuman:
         """
         Facial expression gets randomly selected.
         """
-        files = [f for f in os.listdir(self.expr_dir) if ".mhpose" in f]
+        files = [os.path.join(root, fname) for root, _, fnames in os.walk(self.expr_dir) for fname in fnames if
+         fname.endswith(".mhpose")]
         file = np.random.choice(files)
         self.expr = os.path.join(self.expr_dir, file)
 
@@ -145,7 +150,7 @@ class RandomHuman:
         """
         Pose gets randomly selected
         """
-        files = [f for f in os.listdir(self.poses_dir) if ".bvh" in f]
+        files = [os.path.join(root, fname) for root, _, fnames in os.walk(self.poses_dir) for fname in fnames if fname.endswith(".bvh")]
         file = np.random.choice(files)
         self.pose = os.path.join(self.poses_dir, file)
 
