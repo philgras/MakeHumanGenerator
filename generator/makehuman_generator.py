@@ -33,6 +33,9 @@ class GeneratorTaskView(gui3d.TaskView):
         self.genProgressBar = box.addWidget(gui.ProgressBar())
         self.genProgressBar.setProgress(0)
 
+        # checkbox to enable occluded face dropping
+        self.dropFacesCB = box.addWidget(gui.CheckBox("Drop Occluded Faces"))
+
         # button to trigger the generation
         self.genButton = box.addWidget(gui.Button('Generate'))
 
@@ -86,6 +89,11 @@ class GeneratorTaskView(gui3d.TaskView):
             G.app.mhapi.assets.equipClothes(cloth)
 
         G.app.mhapi.skeleton.setExpressionFromFile(randomHuman.get_expression())
+
+        # toggle Face hiding
+        cloth_handler = G.app.getCategory("Geometries").getTaskByName("Clothes")
+        cloth_handler.updateFaceMasks(self.dropFacesCB.selected)
+        cloth_handler.faceHidingTggl.setChecked(self.dropFacesCB.selected)
 
         # Load pose plugin
         pose_plugin = G.app.getPlugin('3_libraries_pose')
